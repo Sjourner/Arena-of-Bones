@@ -1,0 +1,892 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">  
+	<title>Arena of Bones v2.11</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="js/enemy_generator.js"></script>
+<script src="js/player_generator.js"></script>
+<script src="js/roller.js"></script>
+<script src="js/enemy_full_attack.js"></script>
+<script src="js/weaponry.js"></script>
+<script src="js/classlist.js"></script>
+<script src="js/player_actions.js"></script>
+<script src="js/basic_melee_ai.js"></script>
+
+
+<style>
+#result_box {
+    width: 320px;
+    height: 120px;
+    border: 3px solid black;
+    overflow: auto;
+}
+  li {
+    cursor: default;
+}
+#PlayerTurnButton {
+	display: none;
+}
+#PlayerSingleAttackButton {
+	display: none;
+}
+#attack_selector {
+	display: none;
+}
+#action_selector {
+	display: none;
+}
+#actor_counter {
+	display: none;
+}
+#intro {
+   	width: 320px;
+	text-align: justify;
+}
+#intro2 {
+	display: none;
+   	width: 320px;
+	text-align: justify;
+}
+#intro_text1 {
+	font-style: italic;
+}
+#intro_text2 {
+	font-style: italic;
+}
+#intro_text3 {
+	font-style: italic;
+	display: none;
+}
+#manual_chargen {
+	display: none;
+}
+#cname_id {
+	display: none;
+}
+#movement_selector {
+	display: none;
+}
+#negativemovement_selector {
+	display: none;
+}
+#run_selector {
+	display: none;
+}
+#movement_type_selector {
+	display: none;
+}
+#attack_selector {
+	display: none;
+}
+#attack_type_selector {
+	display: none;
+}
+#PlayerDefendButton {
+	display: none;
+}
+#PlayerMoveButton {
+	display: none;
+}
+#PlayerMoveBackButton {
+	display: none;
+}
+#PlayerRunButton {
+	display: none;
+}
+#PlayerEndTurnButton {
+	display: none;
+}
+
+</style>
+
+</head>
+<body>
+
+<h1>Arena of Bones</h1>
+<div id="intro"><p id="intro_text1">Your servant enters into your room.
+He says: "The representative of the Arena has just arrived. Would you like to 
+speak with him now, Sir?"
+After nodding, a small, bald person is introduced into your study. He bows deeply
+towards you and watches you with his watery eyes. 
+"Thank you for your invitation Milord." he says and bows once again. 
+"I hurried here as I read your letter that you wish to organize a game in our
+Arena. The Arena of Bones is always at your service, Milord and we can organize
+any kind of entertainment. Do you have any specific setting in your mind, Sir? 
+Do you wish to select the gladiators by yourself? Of course, you can leave this 
+to us Milord; our Master of gladiators has proven many times his skills in picking
+the best fighters for the game. Also, how many opponents should we provide?</p>
+<p>Number of random generated (human) players:</p>
+<input id="player_num" type="number" name="quantity" min="0">
+<p>Number of manual created (human) players:</p>
+<input id="man_player_num" type="number" name="quantity" min="0">
+<p >Number of enemies:</p>
+<input id="enemy_num" type="number" name="quantity" min="1">
+<p>Distance between combatants: </p>
+<input id="dist_num" type="number" name="quantity" min="1"><br><br>
+<button type=button id="game_init" onclick=actor_initializaton()>Enter the arena!</button>
+</div>
+<p id="intro_text3">So your Highness wishes to pick the gladiators by hand? So be it!</p><div id=manual_chargen></div>
+
+<div id="intro2"><p id="intro_text1">"Splendid, splendid!" he said. "Everythig will be prepared
+before Hammernight, as you asked, Milord. I shall return once again tomorrow about the contract
+and the regular administrative necessities. The Arena of Bones is always glad to offer you the
+highest quality of entertaintment!"<br>
+With a wawe of your hand you dismiss him and with deep bows he retreats from your halls.<br><br>
+At the great day, you arrive in time and take your reserved seat. The arena is full with spectators; 
+their excited murmur clearly show their lack of patience. You sign to the ceremony master, who tells
+their servants to open the gates of the gladiators. Your pit-fighters come into the arena behind the
+iron grates and wawe their weapons towards the audience. The cheer of the spectators boost their moral
+and they definitely enjoy the public support. However, when the second gate opens and their enemies
+enter the area, you can feel the fear which moved to your warriors' heart. Armed skeletons of the
+defeated gladiators approach your fighters, making both the origin of the name of the Arena and the 
+fate of the gladiators clear: either they win and leave with glory or die and join to the undead forces.
+At your new signal, the ceremony master approaches a giant, hallowed horn and shouts into it:
+"Let the battle begin!"</p>
+<button type=button id="actor_counter" onclick=counter_function()>Begin Combat</button>
+</div>
+<p>Combatants:</p>
+<ol id="list_of_actors">
+</ol>
+<select name="actionSelector" id="action_selector">
+	<option id="dummy_action" selected disabled>Please select</option>;
+	<option id="attackEnemy">Attack</option>;
+	<option>Move</option>;
+	<option>Cast spell</option>;
+	<option>Use Item</option>;
+	<option>Skill</option>;
+	<option>End Turn</option>;
+</select>
+<select name="attacktypeSelector" id="attack_type_selector">
+	<option id="dummy_attack" selected>Please select</option>;
+	<option id="single_attack">Single Attack</option>;
+	<option id="full_attack">Full Attack</option>;
+	<option id="special_attack">Special Attack</option>;
+</select>
+<select name="enemy_selector" id="attack_selector">
+</select>
+<select name="movementtypeSelector" id="movement_type_selector">
+	<option id="dummy_move"selected disabled>Please select</option>;
+	<option id="move_forward">Move forward</option>;
+	<option id="run">Run</option>;
+	<option id="move_backward">Move backward</option>;
+</select>
+<select name="movementSelector" id="movement_selector">
+</select>
+<select name="runSelector" id="run_selector">
+</select>
+<select name="negativemovementSelector" id="negativemovement_selector">
+</select>
+<select name="cname" id="cname_id">
+<option>Contact name</option>;
+</select>
+
+<button type=button id="PlayerTurnButton" onclick=player_attack_function()>Execute</button>
+<button type=button id="PlayerSingleAttackButton" onclick=player_single_attack_function()>Execute</button>
+<button type=button id="PlayerDefendButton" onclick=player_defend_function()>Execute</button>
+<button type=button id="PlayerMoveButton" onclick=player_move_function()>Execute</button>
+<button type=button id="PlayerMoveBackButton" onclick=player_move_back_function()>Execute</button>
+<button type=button id="PlayerRunButton" onclick=player_run_function()>Execute</button>
+<button type=button id="PlayerEndTurnButton" onclick=end_turn()>Execute</button>
+<p>Round: <span id="count_of_rounds"></span></p>
+<p>Result: </p>
+<div id="result_box"><span id="result_text"></span></div>
+
+<script>
+var player_party = []; 
+var enemy_group = [];
+var actors = [];
+var actors_name;
+var actors_init;
+var actor_index;
+var actor_index2;
+var actors_list = "";
+var d20roll = "";
+var roll_result = "";
+var charname = "";
+var dummy = "";
+var dummy2 = "";
+var dummy3 = "";
+var dummy4 = "";
+var enemy_list = "";
+var enemy_cemetry = [];
+var player_cemetry = [];
+var gen_enemy_container = [];
+var gen_player_container = [];
+var movement ="";
+var positive_movement_list ="";
+var run_movement_list ="";
+var negative_movement_list ="";
+var round_count = 1;
+var result = "";
+var attack;
+var scrolled = false;
+var target;
+var target_index;
+var target_index2;
+var travelled_distance = "";
+var damage;
+var distance = "";
+var start_distance = "";
+var j = 0;
+var self_pos_index = "";
+var enemy_numb = "";
+var player_numb = "";
+var player2_numb = "";
+var enemy_HP_holder = "";
+var player_HP_holder = "";
+var player_AC_holder = "";
+var player_pos_list = "";
+var enemy_pos_list = "";
+var nearest_player_pos = "";
+var target_vector = "";
+var actor_pos_list = "";
+var isrunpossible = "";
+var previous = "";
+var ai_selected_step ="";
+var man_chargen ="";
+
+var classes = ["Barbarian","Bard","Cleric","Druid","Fighter","Monk","Paladin","Ranger","Rouge","Sorcerer","Wizard"];
+var race = ["Human","Dwarf", "Elf", "Half-Elf", "Half-Orc","Halfling", "Gnome"];
+var selected_class = "";
+var selected_class = "";
+
+function actor_initializaton() {
+	enemy_numb = document.getElementById("enemy_num").value;
+	player_numb = document.getElementById("player_num").value;
+	player2_numb = document.getElementById("man_player_num").value;
+	start_distance = document.getElementById("dist_num").value;
+	player_generator();
+	man_play_gen_input_gen();
+	enemy_generator();	
+	if (player2_numb > 0) {
+	document.getElementById("intro").style.display = "none";
+	document.getElementById("game_init").style.display = "none";
+	document.getElementById("intro_text3").style.display = "block";
+	document.getElementById("manual_chargen").style.display = "block";
+	} else {
+	document.getElementById("intro").style.display = "none";
+	document.getElementById("game_init").style.display = "none";
+	document.getElementById("intro2").style.display = "block";
+	document.getElementById("actor_counter").style.display = "block";
+	}
+}
+
+
+
+function enemy_HP_generator() {
+	enemy_HP_holder = "";
+	enemy_HP_holder = Math.floor(Math.random() * (8)) + 1;
+}
+
+function player_HP_generator() {
+	player_HP_holder = "";
+	player_HP_holder = Math.floor(Math.random() * (5)) + 9;
+}
+
+function player_AC_generator() {
+	player_AC_holder = "";
+	player_AC_holder = Math.floor(Math.random() * (6)) + 10;
+}
+
+
+function counter_function(){
+actors = player_party.concat(enemy_group);
+	$.each(actors,function() {
+	this.initiative = Math.floor(Math.random() * (20)) + 1;
+	});
+var actors_init = actors.map(function(a) {return a.initiative;});
+	actors.sort(function(a, b){
+    	return b.initiative - a.initiative;
+	});
+var rank = 1;
+	for (var i = 0; i < actors.length; i++) {
+  		if (i > 0 && actors[i].initiative < actors[i - 1].initiative) {
+   		rank++;
+  		}
+    		actors[i].rank = rank;
+		}
+var actors_rank = actors.map(function(c) {return c.rank;});
+var actors_name = actors.map(function(b) {return b.value;});
+document.getElementById("count_of_rounds").innerHTML = round_count;
+mySelector();
+document.getElementById("action_selector").style.display = "inline";
+document.getElementById("actor_counter").style.display = "none";
+document.getElementById("intro2").style.display = "none";
+actorsList ();
+player_round_function();
+}
+
+function mySelector () {	
+	for (k=0; k < enemy_group.length; k++) {
+	if ( (enemy_group[k].pos-5) == actors[j].pos || actors[j].pos == (enemy_group[k].pos+5)){
+	enemy_list += "<option value='enemy_group[k].value'>" + enemy_group[k].label;
+			}
+		}
+	document.getElementById("attack_selector").innerHTML = enemy_list;
+} 
+
+function actorsList () {
+	actors_list = "";
+	for (i=0; i < actors.length; i++) {
+		if (actors[i].HP > 0 && actors[i].status == "passive" && actors[i].player == 0) {
+		actors_list += "<li style='color:black;font-weight: normal;' class='btn' data-id='" + actors[i].value + "'>" 
+		+ actors[i].label + ": HP " + actors[i].maxHP + "/" + actors[i].HP 
+		+ " (" + actors[i].pos + "')" + "<br/>" + "<div id='" + actors[i].value 
+		+ "' style='display:none;' class='abcd'>" +"AC: " + actors[i].AC + "</div>";
+		} else if (actors[i].HP > 0 && actors[i].status == "active" && actors[i].player == 1) {
+		actors_list += "<li style='color:red; font-weight: bold;' class='btn' data-id='" 
+		+ actors[i].value + "'>" + actors[i].label + ": HP " + actors[i].maxHP + "/" 
+		+ actors[i].HP + " (" + actors[i].pos + "')" + "<br/>" + "<div id='" 
+		+ actors[i].value + "' style='display:none;' class='abcd'>" + actors[i].race + " " + actors[i].class 
+		+ " (" + actors[i].level + ") " + " AC: " + actors[i].AC + "<br/>" 
+		+ "Weapon: " + actors[i].regular_weapon + "<br/>" 
+		+ " Str: " + actors[i].strength + " Dex: "+ actors[i].dexterity + " Con: "+ actors[i].constitution + "<br/>"
+		+ " Int: "+ actors[i].intelligence +  " Wis: "+ actors[i].wisdom +  " Cha: "+ actors[i].charisma +	"</div>";
+		} else if (actors[i].HP > 0 && actors[i].status == "passive" && actors[i].player == 1) {
+		actors_list += "<li sstyle='color:black;font-weight: normal;' class='btn' data-id='" 
+		+ actors[i].value + "'>" + actors[i].label + ": HP " + actors[i].maxHP 
+		+ "/" + actors[i].HP + " (" + actors[i].pos + "')" + "<br/>" + "<div id='" + actors[i].value 
+		+ "' style='display:none;' class='abcd'>" + actors[i].race + " " 
+		+ actors[i].class + " (" + actors[i].level + ") "+"AC: " + actors[i].AC + "<br/>" 
+		+ "Weapon: " + actors[i].regular_weapon + "<br/>" 
+		+ " Str: " + actors[i].strength + " Dex: "+ actors[i].dexterity + " Con: "+ actors[i].constitution + "<br/>"
+		+ " Int: "+ actors[i].intelligence +  " Wis: "+ actors[i].wisdom +  " Cha: "+ actors[i].charisma +	"</div>";
+		} else {
+		}
+	}
+	document.getElementById("list_of_actors").innerHTML = actors_list;
+} 
+
+$(document).delegate('.btn','click', function(){
+     $('.abcd').hide();
+   $('#'+$(this).data('id')).toggle(); 
+});
+
+function player_round_function() {
+	for (; j < actors.length; j++) {
+			if (actors[j].player == 0 && player_party.length > 0) {
+			actors[j].status = "active";
+			actors[j].AP = 5;
+			enemy_target_function ();
+			actors[j].status = "passive";
+			} else if (actors[j].player == 1 && enemy_group.length > 0) {
+			result += "It's " + actors[j].label + "'s round. What do you do?" + "<br/>"; 
+			actors[j].status = "active";
+			actors[j].AP = 5;
+			enemy_list = "";
+			mySelector();
+			positive_movement_list = "";
+			positive_distance_measurer();
+			negative_distance_measurer();
+			running_distance_measurer ();
+			actorsList ();
+			document.getElementById("result_text").innerHTML = result;
+			updateScroll();
+			break;
+			} else {
+			battle_end_checker ();
+			break;
+			}
+	}	
+	if (j == actors.length && actors[j-1].player == 0) {
+	result += "End of round " + round_count + "." + "<br/>";
+	document.getElementById("result_text").innerHTML = result;
+	updateScroll();
+	round_count++;
+	document.getElementById("count_of_rounds").innerHTML = round_count;
+	j = 0;
+	player_round_function ();
+	}
+}
+
+function player_defend_function() {
+	result += actors[j].label + " védekezik." + "<br/>";
+	document.getElementById("result_text").innerHTML = result;
+	updateScroll();
+	actors[j].status = "passive";
+	actorsList ();
+	if (j < actors.length - 1) {
+	j++;
+	player_round_function ();
+	} else {
+	result += round_count + ". kör vége." + "<br/>";
+	document.getElementById("result_text").innerHTML = result;
+	updateScroll();
+	round_count++;
+	document.getElementById("count_of_rounds").innerHTML = round_count;
+	j = 0;
+	player_round_function ();
+	}
+}
+
+function player_attack_function (){
+	target = $('#attack_selector :selected').text();
+	target_finder();
+	rolld20 ();
+	attack = d20roll + actors[j].base_attack_mod;
+	if (attack >= enemy_group[target_index].AC) {
+	player_hit_function ();
+	} else {
+	actors[j].status = "passive";
+	result += actors[j].label + " attacked " + enemy_group[target_index].label + " and rolled " + attack + ", but missed." + "<br/>";
+	document.getElementById("result_text").innerHTML = result;
+	updateScroll();
+	}
+	if (j < actors.length - 1) {
+	j++;
+	player_round_function ();
+	} else {
+	result += round_count + ". kör vége." + "<br/>";
+	document.getElementById("result_text").innerHTML = result;
+	updateScroll();
+	round_count++;
+	document.getElementById("count_of_rounds").innerHTML = round_count;
+	j = 0;
+	player_round_function ();
+	}
+}
+
+function end_turn() {
+if (j < actors.length - 1) {
+	actors[j].status = "passive";
+	j++;
+	player_round_function ();
+	} else {
+	result += round_count + ". kör vége." + "<br/>";
+	document.getElementById("result_text").innerHTML = result;
+	actors[j].status = "passive";
+	updateScroll();
+	round_count++;
+	document.getElementById("count_of_rounds").innerHTML = round_count;
+	j = 0;
+	player_round_function ();
+	}
+}
+
+function auto_end_turn() {
+if (actors[j].AP <= 1)
+{if (j < actors.length - 1) {
+	j++;
+	player_round_function ();
+	} else {
+	result += round_count + ". kör vége." + "<br/>";
+	document.getElementById("result_text").innerHTML = result;
+	updateScroll();
+	round_count++;
+	document.getElementById("count_of_rounds").innerHTML = round_count;
+	j = 0;
+	player_round_function ();
+	}
+	}
+}
+
+
+function target_finder() {
+target_index2 = $.map(enemy_group, function(enemy_group, index) {
+    if(enemy_group.label ==  target) {
+        return index;
+    }
+})
+target_index = target_index2[0];
+}
+
+
+
+function rolld20 (){
+	d20roll = Math.floor(Math.random() * (20)) + 1;	
+	console.log(d20roll);
+}
+
+function remove_dead_enemy () {
+	dummy = target_index;
+	enemy_index_finder ();
+	actors.splice (actor_index,1);
+	enemy_group.splice (dummy,1);
+} 
+
+
+function remove_dead_player () {
+	dummy = target;
+	player_index_finder ();
+	actors.splice (actor_index,1);
+	player_party.splice (dummy,1);
+} 
+
+function enemy_index_finder () {
+actor_index2 = $.map(actors, function(actors, index) {
+    if(actors.label == enemy_group[target_index].label) {
+        return index;
+    }
+})
+actor_index = actor_index2[0];
+}
+
+function enemy_index_finder2 () {
+actor_index2 = $.map(enemy_group, function(enemy_group, index) {
+    if(enemy_group.label == actors[j].label) {
+        return index;
+    }
+})
+actor_index = actor_index2[0];
+}
+
+function player_index_finder () {
+actor_index2 = $.map(actors, function(actors, index) {
+    if(actors.label == player_party[target].label) {
+        return index;
+    }
+})
+actor_index = actor_index2[0];
+}
+
+
+function player_index_finder2 () {
+actor_index2 = $.map(player_party, function(player_party, index) {
+    if(player_party.label == actors[j].label) {
+        return index;
+    }
+})
+actor_index = actor_index2[0];
+}
+
+
+function player_index_finder3 () {
+actor_index2 = $.map(player_party, function(player_party, index) {
+    if(player_party.pos == nearest_player_pos) {
+        return index;
+    }
+})
+target = actor_index2[0];
+}
+
+function closest (num, arr) {
+                var curr = arr[0];
+                var diff = Math.abs (num - curr);
+                for (var val = 0; val < arr.length; val++) {
+                    var newdiff = Math.abs (num - arr[val]);
+                    if (newdiff < diff) {
+                        diff = newdiff;
+                        curr = arr[val];
+                    }
+                }
+                return curr;
+            }
+
+function battle_end_checker () {
+	if (player_party.length < 1) {
+	defeat_function();
+	} else if (enemy_group.length < 1){
+	victory_function();
+	} else {
+	}
+
+}
+
+function victory_function () {
+	result += "The remains of your defeated enemies lying around you. You have won the combat!" + "<br/>";
+	document.getElementById("result_text").innerHTML = result;
+	updateScroll();
+	document.getElementById("attack_selector").style.display = "none";
+	document.getElementById("action_selector").style.display = "none";
+	document.getElementById("PlayerTurnButton").style.display = "none";
+	document.getElementById("PlayerDefendButton").style.display = "none";
+}
+
+function defeat_function () {
+	result += "You make a last glimpse to your dead fellows, before your enemy jumps on you to make the last blow... You have been defeated!" + "<br/>";
+	document.getElementById("result_text").innerHTML = result;
+	updateScroll();
+	document.getElementById("attack_selector").style.display = "none";
+	document.getElementById("action_selector").style.display = "none";
+	document.getElementById("PlayerTurnButton").style.display = "none";
+	document.getElementById("PlayerDefendButton").style.display = "none";
+}
+
+function updateScroll(){
+    var element = document.getElementById("result_box");
+    element.scrollTop = element.scrollHeight;
+}
+
+$(document).ready(function () {
+$action_selector_jq = $("select[name='actionSelector']");
+$enemy_selector_jq = $("select[name='enemy_selector']");
+$attack_type_selector_jq = $("select[name='attacktypeSelector']");
+$movement_type_selector_jq = $("select[name='movementtypeSelector']");
+$cname = $("select[name='cname']");
+$actorsjAP_jq = $("actors[j].AP");
+
+
+
+$action_selector_jq.change(function () {
+
+if ($(this).val() == "Please select") {
+document.getElementById("PlayerSingleAttackButton").style.display = "none";
+document.getElementById("attack_selector").style.display = "none";
+document.getElementById("attack_type_selector").style.display = "none";
+document.getElementById("PlayerTurnButton").style.display = "none";
+document.getElementById("PlayerEndTurnButton").style.display = "none";
+document.getElementById("PlayerDefendButton").style.display = "none"; 
+document.getElementById("PlayerMoveButton").style.display = "none";
+document.getElementById("PlayerMoveBackButton").style.display = "none";
+document.getElementById("PlayerRunButton").style.display = "none";
+document.getElementById("movement_selector").style.display = "none";
+document.getElementById("negativemovement_selector").style.display = "none";
+document.getElementById("movement_type_selector").style.display = "none";
+}
+
+
+if ($(this).val() == "Attack" && actors[j].AP == 5) {
+document.getElementById("attack_type_selector").style.display = "inline";
+document.getElementById("PlayerDefendButton").style.display = "none";
+document.getElementById("PlayerMoveButton").style.display = "none";
+document.getElementById("PlayerMoveBackButton").style.display = "none";
+document.getElementById("PlayerRunButton").style.display = "none";
+document.getElementById("movement_selector").style.display = "none";
+document.getElementById("negativemovement_selector").style.display = "none";
+document.getElementById("movement_type_selector").style.display = "none";
+document.getElementById("PlayerEndTurnButton").style.display = "none";
+document.getElementById("single_attack").style.display = "inline";
+document.getElementById("full_attack").style.display = "inline";
+document.getElementById("special_attack").style.display = "inline";
+}
+
+if ($(this).val() == "Attack" && actors[j].AP < 5 && actors[j].AP >= 3) {
+document.getElementById("attack_type_selector").style.display = "inline";
+document.getElementById("PlayerDefendButton").style.display = "none";
+document.getElementById("PlayerMoveButton").style.display = "none";
+document.getElementById("PlayerRunButton").style.display = "none";
+document.getElementById("PlayerMoveBackButton").style.display = "none";
+document.getElementById("PlayerRunButton").style.display = "none";
+document.getElementById("movement_selector").style.display = "none";
+document.getElementById("negativemovement_selector").style.display = "none";
+document.getElementById("movement_type_selector").style.display = "none";
+document.getElementById("PlayerEndTurnButton").style.display = "none";
+document.getElementById("single_attack").style.display = "inline";
+document.getElementById("full_attack").style.display = "none";
+document.getElementById("special_attack").style.display = "none";
+}
+
+if ($(this).val() == "Move" && actors[j].AP == 5) 
+{
+document.getElementById("PlayerSingleAttackButton").style.display = "none";
+document.getElementById("attack_selector").style.display = "none";
+document.getElementById("attack_type_selector").style.display = "none";
+document.getElementById("PlayerTurnButton").style.display = "none";
+document.getElementById("PlayerDefendButton").style.display = "none";
+document.getElementById("PlayerEndTurnButton").style.display = "none";
+document.getElementById("attack_type_selector").style.display = "none";
+document.getElementById("movement_type_selector").style.display = "inline";
+document.getElementById("run").style.display = "inline";
+document.getElementById("move_forward").style.display = "inline";
+document.getElementById("move_backward").style.display = "inline";
+}
+
+if ($(this).val() == "Move" && actors[j].AP < 5 && actors[j].AP > 1) 
+{
+document.getElementById("PlayerSingleAttackButton").style.display = "none";
+document.getElementById("attack_selector").style.display = "none";
+document.getElementById("attack_type_selector").style.display = "none";
+document.getElementById("PlayerTurnButton").style.display = "none";
+document.getElementById("PlayerDefendButton").style.display = "none";
+document.getElementById("PlayerEndTurnButton").style.display = "none";
+document.getElementById("attack_type_selector").style.display = "none";
+document.getElementById("movement_type_selector").style.display = "inline";
+document.getElementById("run").style.display = "none";
+document.getElementById("move_forward").style.display = "inline";
+document.getElementById("move_backward").style.display = "inline";
+}
+
+if ($(this).val() == "Cast Spell" && actors[j].AP == 5 && actors[j].class == "Bard" | 
+"Cast Spell" && actors[j].AP == 5 && actors[j].class == "Cleric" | 
+"Cast Spell" && actors[j].AP == 5 && actors[j].class == "Druid" |
+"Cast Spell" && actors[j].AP == 5 && actors[j].class == "Paladin" |
+"Cast Spell" && actors[j].AP == 5 && actors[j].class == "Ranger" |
+"Cast Spell" && actors[j].AP == 5 && actors[j].class == "Sorcerer" |
+"Cast Spell" && actors[j].AP == 5 && actors[j].class == "Wizard") 
+{
+document.getElementById("PlayerSingleAttackButton").style.display = "none";
+document.getElementById("attack_selector").style.display = "none";
+document.getElementById("attack_type_selector").style.display = "none";
+document.getElementById("PlayerTurnButton").style.display = "none";
+document.getElementById("PlayerDefendButton").style.display = "none";
+document.getElementById("PlayerMoveButton").style.display = "none";
+document.getElementById("PlayerMoveBackButton").style.display = "none";
+document.getElementById("PlayerRunButton").style.display = "none";
+document.getElementById("movement_selector").style.display = "none";
+document.getElementById("negativemovement_selector").style.display = "none";
+document.getElementById("PlayerEndTurnButton").style.display = "none";
+}
+
+if ($(this).val() == "Cast Spell" && actors[j].class == "Barbarian" | 
+"Cast Spell" && actors[j].class == "Fighter" | 
+"Cast Spell" && actors[j].class == "Monk" |
+"Cast Spell" && actors[j].class == "Rouge") 
+{
+document.getElementById("PlayerSingleAttackButton").style.display = "none";
+document.getElementById("attack_selector").style.display = "none";
+document.getElementById("attack_type_selector").style.display = "none";
+document.getElementById("PlayerTurnButton").style.display = "none";
+document.getElementById("PlayerDefendButton").style.display = "none";
+document.getElementById("PlayerMoveButton").style.display = "none";
+document.getElementById("PlayerMoveBackButton").style.display = "none";
+document.getElementById("PlayerRunButton").style.display = "none";
+document.getElementById("movement_selector").style.display = "none";
+document.getElementById("negativemovement_selector").style.display = "none";
+document.getElementById("PlayerEndTurnButton").style.display = "none";
+}
+
+if ($(this).val() == "Skill") 
+{
+document.getElementById("PlayerSingleAttackButton").style.display = "none";
+document.getElementById("attack_selector").style.display = "none";
+document.getElementById("attack_type_selector").style.display = "none";
+document.getElementById("PlayerTurnButton").style.display = "none";
+document.getElementById("PlayerDefendButton").style.display = "none";
+document.getElementById("PlayerMoveButton").style.display = "none";
+document.getElementById("PlayerMoveBackButton").style.display = "none";
+document.getElementById("PlayerRunButton").style.display = "none";
+document.getElementById("movement_selector").style.display = "none";
+document.getElementById("negativemovementSelector").style.display = "none";
+document.getElementById("PlayerEndTurnButton").style.display = "none";
+}
+
+if ($(this).val() == "Use Item") 
+{
+document.getElementById("PlayerSingleAttackButton").style.display = "none";
+document.getElementById("attack_selector").style.display = "none";
+document.getElementById("PlayerTurnButton").style.display = "none";
+document.getElementById("PlayerDefendButton").style.display = "none";
+document.getElementById("PlayerMoveButton").style.display = "none";
+document.getElementById("PlayerRunButton").style.display = "none";
+document.getElementById("movement_selector").style.display = "none";
+document.getElementById("negativemovement_selector").style.display = "none";
+document.getElementById("PlayerEndTurnButton").style.display = "none";
+}
+
+
+if ($(this).val() == "End Turn") 
+{
+document.getElementById("PlayerSingleAttackButton").style.display = "none";
+document.getElementById("attack_selector").style.display = "none";
+document.getElementById("attack_type_selector").style.display = "none";
+document.getElementById("PlayerTurnButton").style.display = "none";
+document.getElementById("PlayerEndTurnButton").style.display = "inline";
+document.getElementById("PlayerDefendButton").style.display = "none"; 
+document.getElementById("PlayerMoveButton").style.display = "none";
+document.getElementById("PlayerMoveBackButton").style.display = "none";
+document.getElementById("PlayerRunButton").style.display = "none";
+document.getElementById("movement_selector").style.display = "none";
+document.getElementById("negativemovement_selector").style.display = "none";
+document.getElementById("movement_type_selector").style.display = "none";
+}
+
+
+});
+
+$attack_type_selector_jq.change(function() {
+if ($("#attack_type_selector").val() == "Please Select") {
+	console.log(j);
+	document.getElementById("PlayerTurnButton").style.display = "none";
+	document.getElementById("PlayerSingleAttackButton").style.display = "none";
+	document.getElementById("attack_selector").style.display = "none";
+}
+if ($("#attack_type_selector").val() == "Single Attack") 
+	{
+	document.getElementById("attack_selector").style.display = "inline";
+	document.getElementById("PlayerTurnButton").style.display = "none";
+	document.getElementById("PlayerSingleAttackButton").style.display = "inline";
+	
+} if ($("#attack_type_selector").val() == "Full Attack") 
+	{
+	document.getElementById("attack_selector").style.display = "inline";
+	document.getElementById("PlayerTurnButton").style.display = "inline";
+	document.getElementById("PlayerSingleAttackButton").style.display = "none";
+	}
+if ($("#attack_type_selector").val() == "Special Attack") 
+	{
+	document.getElementById("attack_selector").style.display = "none";
+	document.getElementById("PlayerTurnButton").style.display = "none";
+	document.getElementById("PlayerSingleAttackButton").style.display = "none";
+	}
+});
+$movement_type_selector_jq.change(function() {
+if ($("#movement_type_selector").val() == "Please select") 
+	{ 
+	document.getElementById("movement_selector").style.display = "none";
+	document.getElementById("run_selector").style.display = "none";
+	document.getElementById("negativemovement_selector").style.display = "none";
+	document.getElementById("PlayerMoveButton").style.display = "none";
+	document.getElementById("PlayerRunButton").style.display = "none";
+	document.getElementById("PlayerMoveBackButton").style.display = "none";
+	} if ($("#movement_type_selector").val() == "Move forward") 
+	{
+	document.getElementById("movement_selector").style.display = "inline";
+	document.getElementById("negativemovement_selector").style.display = "none";
+	document.getElementById("run_selector").style.display = "none";
+	document.getElementById("PlayerMoveButton").style.display = "inline";
+	document.getElementById("PlayerMoveBackButton").style.display = "none";
+	document.getElementById("PlayerRunButton").style.display = "none";
+	} if ($("#movement_type_selector").val() == "Run") 
+	{
+	document.getElementById("run_selector").style.display = "inline";
+	document.getElementById("movement_selector").style.display = "none";
+	document.getElementById("negativemovement_selector").style.display = "none";
+	document.getElementById("PlayerMoveButton").style.display = "none";
+	document.getElementById("PlayerMoveBackButton").style.display = "none";
+	document.getElementById("PlayerRunButton").style.display = "inline";
+	} if ($("#movement_type_selector").val() == "Move backward") 
+	{
+	document.getElementById("movement_selector").style.display = "none";
+	document.getElementById("run_selector").style.display = "none";
+	document.getElementById("negativemovement_selector").style.display = "inline";
+	document.getElementById("PlayerMoveButton").style.display = "none";
+	document.getElementById("PlayerMoveBackButton").style.display = "inline";
+	document.getElementById("PlayerRunButton").style.display = "none";
+	}	
+});
+
+});
+
+
+</script>
+<!--
+result += "Ez " + actors[j].label + " játékos köre. " + j + "<br/>";			
+			document.getElementById("result_text").innerHTML = result;
+			j++;
+			break;
+for (j = 0; j < actors.length; j++) {
+			if (actors[j].player == 0) {
+			$("#attack_selector").hide();
+			enemy_target_function ();
+			} else {
+			$("#attack_selector").show();
+			break;
+
+
+			}
+
+	}
+
+Let's say I have an array of four objects:
+
+var jsObjects = [
+   {a: 1, b: 2}, 
+   {a: 3, b: 4}, 
+   {a: 5, b: 6}, 
+   {a: 7, b: 8}
+];
+
+Is there a way that I can get the third object ({a: 5, b: 6}) by the value of the property b for example without a for...in loop?
+Solution: 
+
+var result = jsObjects.filter(function( obj ) {
+  return obj.b == 6;
+});
+
+var weapon_list = [{label: "Longsword", damage: "d8", range: 5},{label: "Scimitar", damage: "d6", range: 5},{label: "Claw", damage: "d4", range: 5}];
+
+See the MDN Docs on Array.prototype.filter()
+//-->
+</body>
+</html>

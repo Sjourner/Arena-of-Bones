@@ -1,0 +1,3 @@
+Placeholder
+2.) az 1.)-ban szereplő változóval lehetne még "élőben" befolyásolni a tulajdonságokat attól függően,
+milyen fajt választ a játékos.
