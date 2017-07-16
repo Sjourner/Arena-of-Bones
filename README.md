@@ -9,7 +9,7 @@ Hence, the code is a mess and if you'd like to avoid any serious mental hazard -
 - Due to the point above, it's full with bugs/half-implemented features. If you stuck one point, simply reload the site
 (it is not so complex game yet, you don't miss anything)
 - The game uses (a slightly modified) mechanics of the paper-and-pencil game Pathfinder. 
-If you are not familiar with this system (or any versions of Dungeons and Dragons), below you can find a quick summary.
+If you are not familiar with this system (or any versions of Dungeons and Dragons), below you can find a quick summary:
 	1. At the beginnging of the game you generate characters. Warning: The given distance should be divisible with 5.
 	(2. If you entered manually generated characters, you can customize them - because it's fun!)
 	3. Start the combat. On the top, the order of the players and enemies are listed in the order of initiative rolls.
